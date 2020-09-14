@@ -14,35 +14,22 @@ raw_data = pd.read_csv(url)
 
 app = Flask(__name__)
 
-def geocode_transformation(location): # Location taken in the form of columns tinhThanhPho
-  from geopy.geocoders import Nominatim
-  geolocator = Nominatim(user_agent = "MyEncoder")
-  split_ = location.split(', ')
-  geocode_trans = None
-  for i in range(len(split_) - 1):
-    loc = ', '.join(split_[i:])
-    geocode_trans = geolocator.geocode(loc)
-    if geocode_trans is not None:
-      return geocode_trans
-  return geocode_trans
-
 def distance(lat_1, long_1, lat_2, long_2):
   import geopy.distance
   return geopy.distance.great_circle((lat_1, long_1), (lat_2, long_2))
 
-def neighbor_dectection_with_longlat(geocode_trans, data):
+def neighbor_dectection_with_longlat(latitude, longitude, data):
   distances = []
-  long_ = geocode_trans.longitude
-  lat_ = geocode_trans.latitude
+  long_ = longitude
+  lat_ = latitude
   for i in range(len(data)):
     distances.append(distance(lat_, long_, data.loc[i].latitude, data.loc[i].longitude))
   distances = np.array(distances)
   return data.loc[np.argsort(distances)[:20]]
 
 
-def neighbor_detection(address, data):
-  geocode_trans = geocode_transformation(address)
-  return neighbor_dectection_with_longlat(geocode_trans, data)
+def neighbor_detection(latitude, longitude, data):
+  return neighbor_dectection_with_longlat(latitude, longitude, data)
 
 # Function to convert a CSV to JSON 
 # Takes the file paths as arguments 
@@ -83,9 +70,9 @@ def getAll():
         data = json.load(f)
     return data
     
-@app.route('/get20closest/<address>')
-def get20closest(address):
-    neighbor = neighbor_detection(address, raw_data)
+@app.route('/get20closest/<latitude>/<longitude>')
+def get20closest(latitude, longitude):
+    neighbor = neighbor_detection(latitude, longitude, raw_data)
     neighbor.to_csv("neighbor.csv")
     csvFilePath = r'neighbor.csv'
     jsonFilePath = r'result.json'
