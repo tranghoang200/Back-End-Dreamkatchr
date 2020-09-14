@@ -31,6 +31,16 @@ def neighbor_dectection_with_longlat(latitude, longitude, data):
 def neighbor_detection(latitude, longitude, data):
   return neighbor_dectection_with_longlat(latitude, longitude, data)
 
+
+def percentage_type_house():
+  count_type_of_houses = raw_data.loai.value_counts()/len(raw_data) * 100
+  dicti = {'Others': np.sum(count_type_of_houses[5:])}
+  ti_le = (raw_data.loai.value_counts()/len(raw_data) * 100)
+  ti_le_1 = ti_le[:5].append(pd.Series(dicti), ignore_index = False)
+  ti_le_1 = pd.DataFrame(ti_le_1).rename(columns = {0: 'ti_le'})
+  return ti_le_1
+
+
 # Function to convert a CSV to JSON 
 # Takes the file paths as arguments 
 def make_json(csvFilePath, jsonFilePath): 
@@ -78,6 +88,17 @@ def get20closest(latitude, longitude):
     jsonFilePath = r'result.json'
     make_json(csvFilePath, jsonFilePath)
     with open('result.json') as f:
+        data = json.load(f)
+    return data
+
+@app.route('/getPercentEachType')
+def getPercentage():
+    percent = percentage_type_house()
+    percent.to_csv("percent.csv")
+    csvFilePath = r"percent.csv"
+    jsonFilePath = r'percent.json'
+    make_json(csvFilePath, jsonFilePath)
+    with open('percent.json') as f:
         data = json.load(f)
     return data
 
