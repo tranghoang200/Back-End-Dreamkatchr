@@ -25,7 +25,7 @@ def neighbor_dectection_with_longlat(latitude, longitude, data):
   for i in range(len(data)):
     distances.append(distance(lat_, long_, data.loc[i].latitude, data.loc[i].longitude))
   distances = np.array(distances)
-  return data.loc[np.argsort(distances)[:20]]
+  return data.loc[np.argsort(distances)[:40]]
 
 
 def neighbor_detection(latitude, longitude, data):
@@ -40,29 +40,20 @@ def percentage_type_house():
   ti_le_1 = pd.DataFrame(ti_le_1).rename(columns = {0: 'ti_le'})
   return ti_le_1
 
+def getdatas(data, min_price, max_price, min_area, max_area, housetype):
+  data = data[data.loai == housetype].copy()
+  return data.loc[(data['giaCa'] > int(min_price)) & (data['giaCa'] < int(max_price)) & (data['dienTich'] < int(max_area)) & (data['dienTich'] > int(min_area))]
 
-# Function to convert a CSV to JSON 
-# Takes the file paths as arguments 
 def make_json(csvFilePath, jsonFilePath): 
-	
-	# create a dictionary 
 	data = {} 
-	
-	# Open a csv reader called DictReader 
 	with open(csvFilePath, encoding='utf-8') as csvf: 
 		csvReader = csv.DictReader(csvf) 
 		
-		# Convert each row into a dictionary 
-		# and add it to data 
 		for rows in csvReader: 
-			
-			# Assuming a column named 'No' to 
-			# be the primary key 
+	
 			key = rows[''] 
 			data[key] = rows 
 
-	# Open a json writer, and use the json.dumps() 
-	# function to dump data 
 	with open(jsonFilePath, 'w', encoding='utf-8') as jsonf: 
 		jsonf.write(json.dumps(data, indent=4)) 
 
@@ -80,7 +71,7 @@ def getAll():
         data = json.load(f)
     return data
     
-@app.route('/get20closest/<latitude>/<longitude>')
+@app.route('/get40closest/<latitude>/<longitude>')
 def get20closest(latitude, longitude):
     neighbor = neighbor_detection(latitude, longitude, raw_data)
     neighbor.to_csv("neighbor.csv")
@@ -101,7 +92,20 @@ def getPercentage():
     with open('percent.json') as f:
         data = json.load(f)
     return data
-
+  
+@app.route('/filter/<min_price>/<max_price>/<min_area>/<max_area>/<housetype>')
+def getFilter(min_price, max_price, min_area, max_area, housetype):
+    data = pd.read_csv("neighbor.csv")
+    result = getdatas(data, min_price, max_price, min_area, max_area, housetype)
+    result.to_csv("neighborFilter.csv")
+    csvFilePath = r"neighborFilter.csv"
+    jsonFilePath = r'filter.json'
+    make_json(csvFilePath, jsonFilePath)
+    with open('filter.json') as f:
+        data = json.load(f)
+    return data
+    
+    
 @app.route('/predict',methods=['POST'])
 def predict():
     '''
