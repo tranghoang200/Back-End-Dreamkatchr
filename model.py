@@ -13,12 +13,15 @@ from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot
 import matplotlib.pyplot as plt
 import xgboost
+from datetime import date, timedelta
 
 
 url = 'https://raw.githubusercontent.com/QuocAnh261100/GQA/master/csvjson_1.csv'
 raw_data = pd.read_csv(url)
 
 # 2. CLEANING DATA
+
+
 def clean(raw_data):
     # raw_data: data without any modification
     # data: data with modification
@@ -188,7 +191,7 @@ def clean(raw_data):
 
     df = pd.DataFrame(loai_1hot.toarray(), columns=loai_encoder.categories_[0])
     data = pd.concat([data, df], axis=1)
-
+    data.to_csv('clean.cvs')
     # ma tin
 
     return data
@@ -260,7 +263,7 @@ def preprocessing(unpreprocessed_data):
     #            'Biệt thự nghỉ dưỡng','Cửa hàng kiot','Căn hộ Officetel','Khách sạn']
     # for i in list_drop:
     #   data.drop(index = data[data[i] == 1].index, inplace = True)
-
+    data.to_csv('preprocess.csv')
     return data
 
 
@@ -321,6 +324,105 @@ def train(data):
     df.to_csv('error.csv', index=False)
     return xgb_reg, xgb_rmse, xgb_mape
 
+# 5. Prediction
 
-# clean(raw_data)
-# preprocessing()
+
+def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
+
+    data_district = data_cleaned["tinhThanhPho"].str.split(
+        ", ").map(lambda x: x[-2])
+
+    highest_match_district = 0
+    highest_accuracy = 0
+    districts = data_district.unique()
+    for i in range(len(districts)):
+        acc = fuzz.token_set_ratio(districts[i], quan)
+        if (acc > highest_accuracy):
+            highest_match_district = i
+            highest_accuracy = acc
+
+    quan = districts[highest_match_district]
+
+    house_types = list(data_cleaned[data_district == quan].loai.unique())
+    avg_col = []
+
+    for col in data_cleaned.columns:
+        if data_cleaned[col].dtypes != 'int64' and data_cleaned[col].dtypes != 'object' and data_cleaned[col].dtypes != 'datetime64[ns]':
+            avg_col.append(col)
+    avg_col.append('phapLy')
+    avg_col.remove('giaCa')
+
+    house_type_col = ['Căn hộ Tập thể', 'Nhà biệt thự',
+                      'Nhà mặt phố', 'Nhà riêng', 'Nhà rẻ']
+    # for house_type in house_type_col:
+    #   avg_col.remove(house_type)
+
+    bool_col = []
+    for col in data_cleaned.columns:
+        if data_cleaned[col].dtypes == 'bool':
+            bool_col.append(col)
+
+    data_new = data_cleaned.copy()
+    data_new[bool_col] = data_new[bool_col].astype('float64')
+    for col in data_new.columns:
+        if col in avg_col:
+            data_new[col].fillna(data_new[col].mean(), inplace=True)
+    avg_col_dat = list(np.average(data_new[avg_col], 0))
+
+    data_pred = []
+    for house in house_types:
+        today = date.today()
+        for i in range(6):
+            months_added = timedelta(weeks=24 * i)
+            row = []
+            row.append(house)
+            row.append(today + months_added)
+            for dat in avg_col_dat:
+                row.append(dat)
+            data_pred.append(row)
+
+    lst_of_feature = ['loai', 'ngayDangTin'] + avg_col
+    df_for_prediction = pd.DataFrame(data_pred).rename(
+        columns=dict(enumerate(lst_of_feature)))
+
+    df_for_prediction['longitude'] = longitude
+    df_for_prediction['latitude'] = latitude
+
+    df_for_prediction['ngayDangTin_ts'] = df_for_prediction['ngayDangTin'].apply(
+        lambda x: mdates.date2num(x))
+
+    for house_type in house_types:
+        idx = df_for_prediction[df_for_prediction['loai'] == house_type].index
+        df_for_prediction.loc[idx, house_type] = 1
+        others = house_type_col.copy()
+        others.remove(house_type)
+        df_for_prediction.loc[idx, others] = 0
+
+    df_for_prediction['dienTichXsoTang'] = df_for_prediction['dienTich'] * \
+        df_for_prediction['soTang']
+
+    # create new features
+    cols = df_for_prediction.columns
+    if ('soPhongTam' in cols):
+        df_for_prediction['phongTam/dientich'] = df_for_prediction['soPhongTam'] / \
+            df_for_prediction['dienTich']
+    if ('soPhongNgu' in cols):
+        df_for_prediction['phongngu/dientich'] = df_for_prediction['soPhongNgu'] / \
+            df_for_prediction['dienTich']
+    if ('soTang' in cols):
+        df_for_prediction['Overall_S'] = df_for_prediction['soTang'] * \
+            df_for_prediction['dienTich']
+
+    prediction = model.predict(df_for_prediction[top10])
+
+    df_after_prediction = df_for_prediction.copy()
+    df_after_prediction['giaCa'] = prediction
+    prediction_format = ['loai', 'ngayDangTin', 'giaCa']
+    df_after_prediction = df_after_prediction[prediction_format]
+
+    return df_after_prediction
+
+
+clean_data = clean(raw_data)
+preprocess_data = preprocessing(clean_data)
+train(preprocess_data)
