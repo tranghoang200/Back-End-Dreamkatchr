@@ -13,5 +13,4 @@ geopy>=2.0.0
 folium>=0.11.0
 fuzzywuzzy>=0.18.0
 datetime>=4.3
-pickle>=4.0
 xgboost>=1.2.0
