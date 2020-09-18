@@ -17,9 +17,10 @@ from fuzzywuzzy import fuzz
 # with open('test1.json') as f:
 #  data = json.load(f)
 
-top10 = ['Overall_S', 'dienTich', 'longitude', 'latitude', 'phongTam/dientich', 'phongngu/dientich', 'ngayDangTin_ts', 'soTang', 'Nhà mặt phố', 'Hệ thống an ninh']
+top10 = ['Overall_S', 'dienTich', 'longitude', 'latitude', 'phongTam/dientich',
+         'phongngu/dientich', 'ngayDangTin_ts', 'soTang', 'Nhà mặt phố', 'Hệ thống an ninh']
 data_cleaned = pd.read_csv('clean.csv')
-model = pickle.load(open('pima.pkl','rb'))
+model = pickle.load(open('pima.pkl', 'rb'))
 # drop_index = data_cleaned[data_cleaned['diaChi'] == 'Bến Thành, Quận 1, Hà Nội'].index
 # data_cleaned = data_cleaned[~drop_index]
 # print(drop_index)
@@ -36,8 +37,9 @@ def neighbor_dectection_with_longlat(latitude, longitude, data):
     long_ = longitude
     lat_ = latitude
     for i in range(len(data)):
-        distances.append(
-            distance(lat_, long_, data.loc[i].latitude, data.loc[i].longitude))
+        if(data.loc[i].latitude != None and data.loc[i].longitude != None):
+            distances.append(
+                distance(lat_, long_, data.loc[i].latitude, data.loc[i].longitude))
     distances = np.array(distances)
     return data.loc[np.argsort(distances)[:30]]
 
@@ -74,6 +76,8 @@ def make_json(csvFilePath, jsonFilePath):
         jsonf.write(json.dumps(data, indent=4))
 
 # 5. Prediction
+
+
 def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
 
     data_district = data_cleaned["tinhThanhPho"].str.split(
@@ -91,6 +95,7 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
     quan = districts[highest_match_district]
 
     house_types = list(data_cleaned[data_district == quan].loai.unique())
+    print(house_types)
     avg_col = []
 
     for col in data_cleaned.columns:
@@ -169,27 +174,33 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
 
     return df_after_prediction
 
+
 def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang, soPhongNgu, soPhongTam, phapLy, dacDiemXahoi, tienIchKemTheo, noiThat):
     list_dd = ['Gần trường', 'Gần bệnh viện', 'Gần công viên',
-               'Gần nhà trẻ', 'Tiện kinh doanh', 'Khu dân trí cao', 
+               'Gần nhà trẻ', 'Tiện kinh doanh', 'Khu dân trí cao',
                'Gần chợ']
     list_ti = ['Chỗ để xe máy', 'Chỗ để ôtô', 'Trung tâm thể dục', 'Hệ thống an ninh',
                'Nhân viên bảo vệ', 'Hồ bơi', 'Truyền hình cáp', 'Internet']
-    list_noiThat = ['Bàn ăn', 'Bàn trà',  'Sofa phòng khách', 'Kệ ti vi', 'Giường ngủ', 'Tủ quần áo', 
+    list_noiThat = ['Bàn ăn', 'Bàn trà',  'Sofa phòng khách', 'Kệ ti vi', 'Giường ngủ', 'Tủ quần áo',
                     'Sàn gỗ/đá', 'Trần thả', 'Tủ bếp',
                     'Bình nóng lạnh', 'Điều hòa', 'Bồn rửa mặt', 'Bồn tắm']
-    house_type_col = ['Biệt thự liền kề', 'Căn hộ Cao cấp', 'Căn hộ Tập thể',
-       'Căn hộ chung cư', 'Căn hộ mini', 'Nhà biệt thự', 'Nhà mặt phố',
-       'Nhà riêng', 'Nhà rẻ']
+    house_type_col = ['Nhà mặt phố', 'Nhà riêng',  'Căn hộ Cao cấp',
+                      'Nhà phố Shophouse', 'Biệt thự liền kề', 'Nhà trọ, phòng trọ',
+                      'Bất động sản khác',  'Căn hộ trung cấp', 'Căn hộ chung cư', 'Nhà biệt thự', 'Căn hộ rẻ',
+                      'Nhà rẻ', 'Cửa hàng kiot', 'Căn hộ Tập thể', 'Căn hộ mini',
+                      'Khách sạn', 'Biệt thự nghỉ dưỡng', 'Nhà xưởng',
+                      'Căn hộ Officetel', 'Mặt bằng bán lẻ', 'Căn hộ Penthouse',
+                      'Văn phòng']
     df = pd.DataFrame()
     data_pred = []
     today = date.today()
     data_pred.append(today)
-    for i in range(6): 
-        months_added = timedelta(weeks = 4 * i)
+    for i in range(6):
+        months_added = timedelta(weeks=4 * i)
         data_pred.append(today + months_added)
     df['ngayDangTin'] = data_pred
-    df['ngayDangTin_ts'] = df['ngayDangTin'].apply(lambda x: mdates.date2num(x))
+    df['ngayDangTin_ts'] = df['ngayDangTin'].apply(
+        lambda x: mdates.date2num(x))
     df['longitude'] = long
     df['latitude'] = lat
     df['loai'] = loai
@@ -198,22 +209,26 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
             df[i] = 1
         else:
             df[i] = 0
-    if dienTich is not None:        
+    if dienTich is not None:
         df['dienTich'] = dienTich
     else:
-        df['dienTich'] = cleaned_data[cleaned_data['loai']==loai]['dienTich'].mean()
+        df['dienTich'] = cleaned_data[cleaned_data['loai']
+                                      == loai]['dienTich'].mean()
     if soTang is not None:
         df['soTang'] = soTang
     else:
-        df['soTang'] = round(cleaned_data[cleaned_data['loai']==loai]['soTang'].mean(),0)
+        df['soTang'] = round(
+            cleaned_data[cleaned_data['loai'] == loai]['soTang'].mean(), 0)
     if soPhongNgu is not None:
         df['soPhongNgu'] = soPhongNgu
     else:
-        df['soPhongNgu'] = round(cleaned_data[cleaned_data['loai']==loai]['soPhongNgu'].mean(),0)
+        df['soPhongNgu'] = round(
+            cleaned_data[cleaned_data['loai'] == loai]['soPhongNgu'].mean(), 0)
     if soPhongTam is not None:
         df['soPhongTam'] = soPhongTam
     else:
-        df['soPhongTam'] = round(cleaned_data[cleaned_data['loai']==loai]['soPhongTam'].mean(),0)
+        df['soPhongTam'] = round(
+            cleaned_data[cleaned_data['loai'] == loai]['soPhongTam'].mean(), 0)
     if phapLy is not None:
         df['phapLy'] = phapLy
     else:
@@ -237,7 +252,7 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
     df['phongngu/dientich'] = df['soPhongNgu']/df['dienTich']
     df['Overall_S'] = df['soTang']*df['dienTich']
     y_pred_1 = model.predict(df[top10])
-    
+
     prediction = model.predict(df[top10])
 
     df_after_prediction = df.copy()
@@ -245,6 +260,7 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
     prediction_format = ['loai', 'ngayDangTin', 'giaCa']
     df_after_prediction = df_after_prediction[prediction_format]
     return df_after_prediction
+
 
 @app.route('/')
 def home():
@@ -262,7 +278,7 @@ def getAll():
 
 
 @app.route('/get30closest/<latitude>/<longitude>')
-def get20closest(latitude, longitude):
+def get30closest(latitude, longitude):
     neighbor = neighbor_detection(latitude, longitude, data_cleaned)
     neighbor.to_csv("neighbor.csv")
     csvFilePath = r'neighbor.csv'
@@ -301,10 +317,8 @@ def getFilter(min_price, max_price, min_area, max_area, housetype):
 
 @app.route('/predictByType/<quan>/<longitude>/<latitude>')
 def predictByType(quan, longitude, latitude):
-    '''
-    For rendering results on HTML GUI
-    '''
-    result = predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned)
+    result = predict_trend_loai(
+        quan, longitude, latitude, model, top10, data_cleaned)
     result.to_csv("predict.csv")
     csvFilePath = r"predict.csv"
     jsonFilePath = r'predict.json'
@@ -316,7 +330,9 @@ def predictByType(quan, longitude, latitude):
 
 @app.route('/predictHouse/<longitude>/<lat>/<loai>/<dienTich>/<soTang>/<soPhongNgu>/<soPhongTam>/<phapLy>/<dacDiemXahoi>/<tienIchKemTheo>/<noiThat>')
 def predictHouse(longitude, lat, loai, dienTich, soTang, soPhongNgu, soPhongTam, phapLy, dacDiemXahoi, tienIchKemTheo, noiThat):
-    result = predict_future(model, top10, data_cleaned, longitude, lat, loai, dienTich, soTang, soPhongNgu, soPhongTam, phapLy, dacDiemXahoi, tienIchKemTheo, noiThat)
+    print(type(loai), loai)
+    result = predict_future(model, top10, data_cleaned, longitude, lat, loai, dienTich,
+                            soTang, soPhongNgu, soPhongTam, phapLy, dacDiemXahoi, tienIchKemTheo, noiThat)
     result.to_csv("predictHouse.csv")
     csvFilePath = r"predictHouse.csv"
     jsonFilePath = r'predictHouse.json'
@@ -324,7 +340,6 @@ def predictHouse(longitude, lat, loai, dienTich, soTang, soPhongNgu, soPhongTam,
     with open('predictHouse.json') as f:
         data = json.load(f)
     return data
-
 
 
 if __name__ == "__main__":
