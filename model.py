@@ -191,7 +191,7 @@ def clean(raw_data):
 
     df = pd.DataFrame(loai_1hot.toarray(), columns=loai_encoder.categories_[0])
     data = pd.concat([data, df], axis=1)
-    data.to_csv('clean.csv')
+    data.to_csv('clean.csv', index = False)
     # ma tin
 
     return data
@@ -203,13 +203,13 @@ def preprocessing(unpreprocessed_data):
     # missing data handle
     is_null = ((data.isnull().sum())/len(data)).sort_values(ascending=False)
     drop_col = is_null[is_null > 0.5].index.to_list()
+    # drop_col.append('Unnamed: 0')
     # drop_col.append('loai')
     data = data.drop(columns=drop_col)
 
     # convert time to TimeSeries
     import matplotlib.dates as mdates
-    data['ngayDangTin_ts'] = data['ngayDangTin'].apply(
-        lambda x: mdates.date2num(x))
+    data['ngayDangTin_ts'] = data['ngayDangTin'].apply(lambda x: mdates.date2num(x))
 
     # use DBSCAN to find outliers
     from sklearn.cluster import DBSCAN
@@ -262,7 +262,7 @@ def preprocessing(unpreprocessed_data):
     # for i in list_drop:
     #   data.drop(index = data[data[i] == 1].index, inplace = True)
 
-    data.to_csv('preprocess.csv')
+    data.to_csv('preprocess.csv', index = False)
     return data
 
 
@@ -287,7 +287,12 @@ def train(data):
             _.append(fea_cols[i])
         return _
     data_ = data.drop(columns=['ngayDangTin', 'ngayHetHan', 'maTin'])
-    top10 = Feature_Importance(data_, data_.columns[1:], data_.columns[0], 10)
+    lst_fea = []
+    for col in data_.columns:
+      if col != 'giaCa':
+        lst_fea.append(col)
+
+    top10 = Feature_Importance(data_,lst_fea, 'giaCa', 10)
 
     if 'ngayDangTin_ts' not in top10:
         top10.append('ngayDangTin_ts')
@@ -302,8 +307,8 @@ def train(data):
     X_test = X_test.sort_index()
     y_test = y_test.sort_index()
     # optimze parameters for xgboost model
-    param_grid = [{'max_depth': [3, 5, 7, 9], 'min_child_weight':[1, 2, 3, 4], 'objective': ['reg:linear'], 'colsample_bytree': [0.6, 0.8, 1], 'learning_rate': [0.001, 0.01],
-                   'reg_lambda': [0.1, 0.5], 'n_estimators': [500]}]
+    param_grid = [{'max_depth': [3, 5, 7, 9], 'min_child_weight':[1, 2, 3, 4], 'objective': ['reg:linear'], 'colsample_bytree': [0.6, 1], 'learning_rate': [0.001, 0.01],
+                   'reg_lambda': [0.1, 0.5], 'n_estimators': [100]}]
     model = xgboost.XGBRegressor()
     grid_search = GridSearchCV(model, param_grid, cv=7,
                                scoring='neg_mean_squared_error',
@@ -325,9 +330,14 @@ def train(data):
                       'error'], index=['xgb_rmse', 'xgb_mape'])
     df.to_csv('error.csv', index=False)
     print(top10)
+    top10_df = pd.DataFrame(top10)
+    top10_df.to_csv('top10.csv', index = False)
+
     return xgb_reg, xgb_rmse, xgb_mape, top10
 
 
-data_clean = clean(raw_data)
-data_preprocess = preprocessing(data_clean)
+# data_clean = clean(raw_data)
+# data_clean = pd.read_csv('clean.csv')
+# data_preprocess = preprocessing(data_clean)
+data_preprocess = pd.read_csv('preprocess.csv')
 train(data_preprocess)

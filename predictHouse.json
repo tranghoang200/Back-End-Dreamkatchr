@@ -1,0 +1,9 @@
+{
+    "0": {
+        "": "0",
+        "id": "0",
+        "trend": "Kh\u00f4ng \u0111\u1ed5i",
+        "loai": "C\u0103n h\u1ed9 chung c\u01b0",
+        "reportData": "[{'date': datetime.date(2020, 9, 19), 'price': 10.994678}, {'date': datetime.date(2020, 9, 19), 'price': 10.994678}, {'date': datetime.date(2020, 10, 17), 'price': 10.994678}]"
+    }
+}
