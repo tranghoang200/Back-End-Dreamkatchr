@@ -130,7 +130,7 @@ def clean(raw_data):
                                 done + '&key=AIzaSyAhuvkbu8iQU3vptKQSbaHQNlTJv0ndTVw')
         dataJson = response.json()
         if (dataJson['status'] != 'OK'):
-            location = {'lat': None, 'lng': None}
+            location = {'lat': -1, 'lng': -1}
         else:
             location = dataJson['results'][0]['geometry']['location']
         geocodes.append(location)
