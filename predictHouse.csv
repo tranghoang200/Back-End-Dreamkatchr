@@ -1,2 +1,2 @@
-,id,trend,reportData
-0,0,Không đổi,"[{'date': datetime.date(2020, 9, 19), 'price': 10.994678}, {'date': datetime.date(2020, 9, 19), 'price': 10.994678}, {'date': datetime.date(2020, 10, 17), 'price': 10.994678}]"
+,id,loai,trend,reportData
+0,0,Căn hộ chung cư,không đổi,"[{'date': 9, 'price': 3.427093}, {'date': 10, 'price': 3.427093}]"

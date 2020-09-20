@@ -3,70 +3,70 @@
         "": "0",
         "id": "0",
         "loai": "Nh\u00e0 m\u1eb7t ph\u1ed1",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 10.060307}, {'date': datetime.date(2020, 4, 4), 'price': 10.060307}, {'date': datetime.date(2020, 6, 27), 'price': 10.060307}, {'date': datetime.date(2020, 9, 19), 'price': 16.453463}, {'date': datetime.date(2020, 12, 12), 'price': 16.453463}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 11.61}, {'date': 4, 'price': 11.61}, {'date': 6, 'price': 11.61}, {'date': 9, 'price': 17.3}, {'date': 12, 'price': 17.3}]"
     },
     "1": {
         "": "1",
         "id": "1",
         "loai": "C\u0103n h\u1ed9 Cao c\u1ea5p",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "2": {
         "": "2",
         "id": "2",
         "loai": "Nh\u00e0 ri\u00eang",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "3": {
         "": "3",
         "id": "3",
         "loai": "Nh\u00e0 ph\u1ed1 Shophouse",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "4": {
         "": "4",
         "id": "4",
         "loai": "Nh\u00e0 bi\u1ec7t th\u1ef1",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "5": {
         "": "5",
         "id": "5",
         "loai": "Bi\u1ec7t th\u1ef1 li\u1ec1n k\u1ec1",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "6": {
         "": "6",
         "id": "6",
         "loai": "C\u0103n h\u1ed9 Officetel",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "7": {
         "": "7",
         "id": "7",
         "loai": "Nh\u00e0 r\u1ebb",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "8": {
         "": "8",
         "id": "8",
         "loai": "C\u0103n h\u1ed9 chung c\u01b0",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     },
     "9": {
         "": "9",
         "id": "9",
         "loai": "C\u0103n h\u1ed9 trung c\u1ea5p",
-        "trend": "Kh\u00f4ng \u0111\u1ed5i",
-        "reportData": "[{'date': datetime.date(2020, 1, 11), 'price': 4.798667}, {'date': datetime.date(2020, 4, 4), 'price': 4.798667}, {'date': datetime.date(2020, 6, 27), 'price': 4.798667}, {'date': datetime.date(2020, 9, 19), 'price': 6.3089695}, {'date': datetime.date(2020, 12, 12), 'price': 6.3089695}]"
+        "trend": "kh\u00f4ng \u0111\u1ed5i",
+        "reportData": "[{'date': 1, 'price': 5.02}, {'date': 4, 'price': 5.02}, {'date': 6, 'price': 5.02}, {'date': 9, 'price': 6.5}, {'date': 12, 'price': 6.5}]"
     }
 }
