@@ -152,8 +152,8 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
     df_after_prediction['giaCa'] = prediction
     prediction_format = ['loai', 'ngayDangTin', 'giaCa', 'thang']
     df_after_prediction = df_after_prediction[prediction_format]
-
-
+    
+    
     trend_lst = []
     for typ in df_after_prediction['loai'].unique():
         fr1 = df_after_prediction['loai'] == typ
@@ -163,11 +163,11 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
         trend_plateau = df_after_prediction[fr1][fr2].giaCa.values == df_after_prediction[fr1][fr3].giaCa.values
         trend_increase = df_after_prediction[fr1][fr2].giaCa.values < df_after_prediction[fr1][fr3].giaCa.values
         if trend_plateau[0]:
-            trend_lst.append([typ, 'Không đổi'])
+            trend_lst.append([typ, 'không đổi'])
         elif trend_increase[0]:
-            trend_lst.append([typ, 'Tăng'])
+            trend_lst.append([typ, 'tăng'])
         else:
-            trend_lst.append([typ, 'Giảm'])
+            trend_lst.append([typ, 'giảm'])
 
     df_trend = pd.DataFrame(trend_lst).rename(columns={0: 'loai', 1: 'trend'})
 
@@ -180,14 +180,12 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
         dat['reportData'] = []
         for idx in df_after_prediction[df_after_prediction['loai'] == df_trend.loc[i, 'loai']].index:
             dat['reportData'].append(
-                {'date': df_after_prediction.loc[idx, 'thang'], 'price': df_after_prediction.loc[idx, 'giaCa']})
+                {'date': df_after_prediction.loc[idx, 'thang'], 'price': round(df_after_prediction.loc[idx, 'giaCa'], 2)})
         dict_final.append(dat)
 
     return dict_final
 
 def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang, soPhongNgu, soPhongTam, phapLy, dacDiemXahoi, tienIchKemTheo, noiThat):
-    import matplotlib.dates as mdates
-    from datetime import date, timedelta
     list_dd = ['Gần trường', 'Gần bệnh viện', 'Gần công viên',
                'Gần nhà trẻ', 'Tiện kinh doanh', 'Khu dân trí cao', 
                'Gần chợ']
@@ -220,23 +218,23 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
             df[i] = 1
         else:
             df[i] = 0
-    if dienTich is not None:        
+    if dienTich == '':        
         df['dienTich'] = float(dienTich)
     else:
         df['dienTich'] = cleaned_data[cleaned_data['loai']==loai]['dienTich'].mean()
-    if soTang is not None:
+    if soTang == '':
         df['soTang'] = int(soTang)
     else:
         df['soTang'] = round(cleaned_data[cleaned_data['loai']==loai]['soTang'].mean(),0)
-    if soPhongNgu is not None:
+    if soPhongNgu == '':
         df['soPhongNgu'] = int(soPhongNgu)
     else:
         df['soPhongNgu'] = round(cleaned_data[cleaned_data['loai']==loai]['soPhongNgu'].mean(),0)
-    if soPhongTam is not None:
+    if soPhongTam == '':
         df['soPhongTam'] = int(soPhongTam)
     else:
         df['soPhongTam'] = round(cleaned_data[cleaned_data['loai']==loai]['soPhongTam'].mean(),0)
-    if phapLy is not None:
+    if phapLy == '':
         df['phapLy'] = int(phapLy)
     else:
         df['phapLy'] = 0
@@ -275,11 +273,11 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
     trend_plateau = df_after_prediction[fr1][fr2].giaCa.values == df_after_prediction[fr1][fr3].giaCa.values
     trend_increase = df_after_prediction[fr1][fr2].giaCa.values < df_after_prediction[fr1][fr3].giaCa.values
     if trend_plateau[0]:
-      trend_lst.append([typ, 'Không đổi'])
+      trend_lst.append([typ, 'không đổi'])
     elif trend_increase[0]:
-      trend_lst.append([typ, 'Tăng'])
+      trend_lst.append([typ, 'tăng'])
     else:
-      trend_lst.append([typ, 'Giảm'])
+      trend_lst.append([typ, 'giảm'])
 
     df_trend = pd.DataFrame(trend_lst).rename(columns = {0: 'loai', 1: 'trend'})
 
