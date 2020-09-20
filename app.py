@@ -9,16 +9,6 @@ from datetime import date, timedelta
 from fuzzywuzzy import fuzz
 import geopy.distance
 
-# loaded_pickle = pickle.loads(list_pickle)
-# with open('test1.json') as f:
-#  data = json.load(f)
-
-# f = open('top10.txt', 'r')
-# p = f.read()
-# top10 = p.split(' ')
-# top10.pop()
-# print(top10)
-
 top10c = pd.read_csv('top10.csv')
 top10 = top10c['0'].values
 
@@ -76,7 +66,6 @@ def make_json(csvFilePath, jsonFilePath):
 
 # 5. Prediction
 
-
 def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
     index_1 = data_cleaned[data_cleaned["tinhThanhPho"].str.split(", ").map(lambda x: len(x)<=1)].index
     data_cleaned.drop(index = index_1, inplace = True)
@@ -104,8 +93,6 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
     avg_col.remove('giaCa')
 
     house_type_col = list(data_cleaned['loai'].unique())
-    # for house_type in house_type_col:
-    #   avg_col.remove(house_type)
 
     bool_col = []
     for col in data_cleaned.columns:
@@ -119,10 +106,6 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
             data_new[col].fillna(data_new[col].mean(), inplace=True)
     avg_col_dat = list(np.average(data_new[avg_col], 0))
 
-    from datetime import date, timedelta
-    import matplotlib.dates as mdates
-
-    import pandas as pd
     data_pred = []
     for house in house_types:
         today = date.today()
@@ -142,9 +125,8 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
     df_for_prediction['longitude'] = float(longitude)
     df_for_prediction['latitude'] = float(latitude)
 
-    import matplotlib.dates as mdates
-    df_for_prediction['ngayDangTin_ts'] = df_for_prediction['ngayDangTin'].apply(
-        lambda x: mdates.date2num(x))
+    df_for_prediction['ngayDangTin_ts'] = df_for_prediction['ngayDangTin'].apply(lambda x: mdates.date2num(x))
+    df_for_prediction['thang'] = df_for_prediction['ngayDangTin'].apply(lambda x: x.month)
 
     for house_type in house_type_col:
         df_for_prediction[house_type] = 0
@@ -168,10 +150,9 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
 
     df_after_prediction = df_for_prediction.copy()
     df_after_prediction['giaCa'] = prediction
-    prediction_format = ['loai', 'ngayDangTin', 'giaCa']
+    prediction_format = ['loai', 'ngayDangTin', 'giaCa', 'thang']
     df_after_prediction = df_after_prediction[prediction_format]
 
-    from datetime import date, timedelta
 
     trend_lst = []
     for typ in df_after_prediction['loai'].unique():
@@ -199,33 +180,38 @@ def predict_trend_loai(quan, longitude, latitude, model, top10, data_cleaned):
         dat['reportData'] = []
         for idx in df_after_prediction[df_after_prediction['loai'] == df_trend.loc[i, 'loai']].index:
             dat['reportData'].append(
-                {'date': df_after_prediction.loc[idx, 'ngayDangTin'], 'price': df_after_prediction.loc[idx, 'giaCa']})
+                {'date': df_after_prediction.loc[idx, 'thang'], 'price': df_after_prediction.loc[idx, 'giaCa']})
         dict_final.append(dat)
 
     return dict_final
 
-
 def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang, soPhongNgu, soPhongTam, phapLy, dacDiemXahoi, tienIchKemTheo, noiThat):
+    import matplotlib.dates as mdates
+    from datetime import date, timedelta
     list_dd = ['Gần trường', 'Gần bệnh viện', 'Gần công viên',
-               'Gần nhà trẻ', 'Tiện kinh doanh', 'Khu dân trí cao',
+               'Gần nhà trẻ', 'Tiện kinh doanh', 'Khu dân trí cao', 
                'Gần chợ']
     list_ti = ['Chỗ để xe máy', 'Chỗ để ôtô', 'Trung tâm thể dục', 'Hệ thống an ninh',
                'Nhân viên bảo vệ', 'Hồ bơi', 'Truyền hình cáp', 'Internet']
-    list_noiThat = ['Bàn ăn', 'Bàn trà',  'Sofa phòng khách', 'Kệ ti vi', 'Giường ngủ', 'Tủ quần áo',
+    list_noiThat = ['Bàn ăn', 'Bàn trà',  'Sofa phòng khách', 'Kệ ti vi', 'Giường ngủ', 'Tủ quần áo', 
                     'Sàn gỗ/đá', 'Trần thả', 'Tủ bếp',
                     'Bình nóng lạnh', 'Điều hòa', 'Bồn rửa mặt', 'Bồn tắm']
-    house_type_col = ['Nhà mặt phố', 'Nhà riêng', 'Căn hộ Cao cấp', 'Nhà phố Shophouse', 'Biệt thự liền kề', 'Nhà trọ, phòng trọ', 'Bất động sản khác', 'Căn hộ trung cấp', 'Căn hộ chung cư',
-                      'Nhà biệt thự', 'Căn hộ rẻ', 'Nhà rẻ', 'Cửa hàng kiot', 'Căn hộ Tập thể', 'Căn hộ mini', 'Khách sạn', 'Biệt thự nghỉ dưỡng', 'Căn hộ Officetel', 'Mặt bằng bán lẻ', 'Căn hộ Penthouse', 'Văn phòng']
+    house_type_col = ['Nhà mặt phố', 'Nhà riêng',  'Căn hộ Cao cấp',
+       'Nhà phố Shophouse', 'Biệt thự liền kề', 'Nhà trọ, phòng trọ',
+       'Bất động sản khác',  'Căn hộ trung cấp', 'Căn hộ chung cư', 'Nhà biệt thự', 'Căn hộ rẻ',
+       'Nhà rẻ', 'Cửa hàng kiot', 'Căn hộ Tập thể', 'Căn hộ mini',
+       'Khách sạn', 'Biệt thự nghỉ dưỡng', 'Nhà xưởng',
+       'Căn hộ Officetel', 'Mặt bằng bán lẻ', 'Căn hộ Penthouse',
+       'Văn phòng']
     df = pd.DataFrame()
     data_pred = []
     today = date.today()
-    data_pred.append(today)
-    for i in range(2):
-        months_added = timedelta(weeks=4 * i)
+    for i in range(2): 
+        months_added = timedelta(weeks = 4 * i)
         data_pred.append(today + months_added)
     df['ngayDangTin'] = data_pred
-    df['ngayDangTin_ts'] = df['ngayDangTin'].apply(
-        lambda x: mdates.date2num(x))
+    df['ngayDangTin_ts'] = df['ngayDangTin'].apply(lambda x: mdates.date2num(x))
+    df['thang'] = df['ngayDangTin'].apply(lambda x: x.month)
     df['longitude'] = float(long)
     df['latitude'] = float(lat)
     df['loai'] = loai
@@ -234,26 +220,22 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
             df[i] = 1
         else:
             df[i] = 0
-    if dienTich is not None:
-        df['dienTich'] = int(dienTich)
+    if dienTich is not None:        
+        df['dienTich'] = float(dienTich)
     else:
-        df['dienTich'] = cleaned_data[cleaned_data['loai']
-                                      == loai]['dienTich'].mean()
+        df['dienTich'] = cleaned_data[cleaned_data['loai']==loai]['dienTich'].mean()
     if soTang is not None:
         df['soTang'] = int(soTang)
     else:
-        df['soTang'] = round(
-            cleaned_data[cleaned_data['loai'] == loai]['soTang'].mean(), 0)
+        df['soTang'] = round(cleaned_data[cleaned_data['loai']==loai]['soTang'].mean(),0)
     if soPhongNgu is not None:
         df['soPhongNgu'] = int(soPhongNgu)
     else:
-        df['soPhongNgu'] = round(
-            cleaned_data[cleaned_data['loai'] == loai]['soPhongNgu'].mean(), 0)
+        df['soPhongNgu'] = round(cleaned_data[cleaned_data['loai']==loai]['soPhongNgu'].mean(),0)
     if soPhongTam is not None:
         df['soPhongTam'] = int(soPhongTam)
     else:
-        df['soPhongTam'] = round(
-            cleaned_data[cleaned_data['loai'] == loai]['soPhongTam'].mean(), 0)
+        df['soPhongTam'] = round(cleaned_data[cleaned_data['loai']==loai]['soPhongTam'].mean(),0)
     if phapLy is not None:
         df['phapLy'] = int(phapLy)
     else:
@@ -276,43 +258,42 @@ def predict_future(model, top10, cleaned_data, long, lat, loai, dienTich, soTang
     df['phongTam/dientich'] = df['soPhongTam']/df['dienTich']
     df['phongngu/dientich'] = df['soPhongNgu']/df['dienTich']
     df['Overall_S'] = df['soTang']*df['dienTich']
-    y_pred_1 = model.predict(df[top10])
-
+    
     prediction = model.predict(df[top10])
 
     df_after_prediction = df.copy()
     df_after_prediction['giaCa'] = prediction
-    prediction_format = ['loai', 'ngayDangTin', 'giaCa']
+    prediction_format = ['loai', 'ngayDangTin', 'giaCa', 'thang']
     df_after_prediction = df_after_prediction[prediction_format]
 
     trend_lst = []
     for typ in df_after_prediction['loai'].unique():
-        fr1 = df_after_prediction['loai'] == typ
-        fr2 = df_after_prediction['ngayDangTin'] == date.today()
-        fr3 = df_after_prediction['ngayDangTin'] == date.today(
-        ) + timedelta(weeks=4)
-
+      fr1 = df_after_prediction['loai'] == typ
+      fr2 = df_after_prediction['ngayDangTin'] == date.today()
+      fr3 = df_after_prediction['ngayDangTin'] == date.today() + timedelta(weeks = 4)
+    
     trend_plateau = df_after_prediction[fr1][fr2].giaCa.values == df_after_prediction[fr1][fr3].giaCa.values
     trend_increase = df_after_prediction[fr1][fr2].giaCa.values < df_after_prediction[fr1][fr3].giaCa.values
     if trend_plateau[0]:
-        trend_lst.append([typ, 'Không đổi'])
+      trend_lst.append([typ, 'Không đổi'])
     elif trend_increase[0]:
-        trend_lst.append([typ, 'Tăng'])
+      trend_lst.append([typ, 'Tăng'])
     else:
-        trend_lst.append([typ, 'Giảm'])
+      trend_lst.append([typ, 'Giảm'])
 
-    df_trend = pd.DataFrame(trend_lst).rename(columns={0: 'loai', 1: 'trend'})
+    df_trend = pd.DataFrame(trend_lst).rename(columns = {0: 'loai', 1: 'trend'})
 
     dict_final = []
     for i in range(len(df_trend)):
-        dat = {}
-        dat['id'] = i
-        dat['trend'] = df_trend.loc[i, 'trend']
-        dat['reportData'] = []
-        for idx in df_after_prediction[df_after_prediction['loai'] == df_trend.loc[i, 'loai']].index:
-            dat['reportData'].append(
-                {'date': df_after_prediction.loc[idx, 'ngayDangTin'], 'price': df_after_prediction.loc[idx, 'giaCa']})
-        dict_final.append(dat)
+      dat = {}
+      dat['id'] = i
+      dat['loai']  = df_trend.loc[i, 'loai']
+      dat['trend'] = df_trend.loc[i, 'trend']
+      dat['reportData'] = []
+      for idx in df_after_prediction[df_after_prediction['loai'] == df_trend.loc[i, 'loai']].index:
+        dat['reportData'].append({'date': df_after_prediction.loc[idx, 'thang'], 'price': df_after_prediction.loc[idx, 'giaCa']})
+      dict_final.append(dat)
+
 
     return dict_final
 
