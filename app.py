@@ -45,6 +45,14 @@ def percentage_type_house():
     ti_le_1 = pd.DataFrame(ti_le_1).rename(columns={0: 'ti_le'})
     return ti_le_1
 
+def percentage_type_house(data):
+    count_type_of_houses = data.loai.value_counts()/len(data) * 100
+    # dicti = {'Khác': np.sum(count_type_of_houses[:])}
+    ti_le = (data.loai.value_counts()/len(data) * 100)
+    # ti_le_1 = ti_le.append(pd.Series(dicti), ignore_index=False)
+    ti_le_1 = pd.DataFrame(ti_le).rename(columns={0: 'ti_le'})
+    return ti_le_1
+
 
 def getdatas(data, min_price, max_price, min_area, max_area, housetype):
     data = data[data.loai == housetype].copy()
@@ -334,6 +342,17 @@ def getPercentage():
         data = json.load(f)
     return data
 
+@app.route('/getPercentEachType/filter')
+def getFilterType():
+    data = pd.read_csv("neighbor.csv")
+    percent = percentage_type_house(data)
+    percent.to_csv("percent.csv")
+    csvFilePath = r"percent.csv"
+    jsonFilePath = r'percent.json'
+    make_json(csvFilePath, jsonFilePath)
+    with open('percent.json') as f:
+        data = json.load(f)
+    return data
 
 @app.route('/filter/<min_price>/<max_price>/<min_area>/<max_area>/<housetype>')
 def getFilter(min_price, max_price, min_area, max_area, housetype):

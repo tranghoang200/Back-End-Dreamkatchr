@@ -1,22 +1,14 @@
 {
     "Nh\u00e0 ri\u00eang": {
         "": "Nh\u00e0 ri\u00eang",
-        "ti_le": "70.63402207755448"
+        "loai": "70.0"
     },
     "Nh\u00e0 m\u1eb7t ph\u1ed1": {
         "": "Nh\u00e0 m\u1eb7t ph\u1ed1",
-        "ti_le": "18.879139541466174"
+        "loai": "26.666666666666668"
     },
-    "C\u0103n h\u1ed9 Cao c\u1ea5p": {
-        "": "C\u0103n h\u1ed9 Cao c\u1ea5p",
-        "ti_le": "3.0427398811208604"
-    },
-    "Nh\u00e0 bi\u1ec7t th\u1ef1": {
-        "": "Nh\u00e0 bi\u1ec7t th\u1ef1",
-        "ti_le": "1.1746391168978205"
-    },
-    "Kh\u00e1c": {
-        "": "Kh\u00e1c",
-        "ti_le": "6.2694593829606555"
+    "C\u0103n h\u1ed9 T\u1eadp th\u1ec3": {
+        "": "C\u0103n h\u1ed9 T\u1eadp th\u1ec3",
+        "loai": "3.3333333333333335"
     }
 }
