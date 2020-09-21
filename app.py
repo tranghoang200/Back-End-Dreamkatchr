@@ -37,7 +37,7 @@ def neighbor_detection(latitude, longitude, data):
     return neighbor_dectection_with_longlat(latitude, longitude, data)
 
 
-def percentage_type_house():
+def percentage_type_house_all():
     count_type_of_houses = data_cleaned.loai.value_counts()/len(data_cleaned) * 100
     dicti = {'Khác': np.sum(count_type_of_houses[4:])}
     ti_le = (data_cleaned.loai.value_counts()/len(data_cleaned) * 100)
@@ -333,7 +333,7 @@ def get30closest(latitude, longitude):
 
 @app.route('/getPercentEachType')
 def getPercentage():
-    percent = percentage_type_house()
+    percent = percentage_type_house_all()
     percent.to_csv("percent.csv")
     csvFilePath = r"percent.csv"
     jsonFilePath = r'percent.json'
